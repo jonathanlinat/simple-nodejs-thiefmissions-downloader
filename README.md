@@ -15,14 +15,14 @@ This project uses mainly the `cheerio`, `node-fetch` and `easydl` libraries.
 
 Clone the repository locally.
 
-```
+```bash
 cd <path/to/your/desired/folder/>
 git clone git@github.com:jonathanlinat/simple-nodejs-thiefmissions-downloader.git
 ```
 
 Install the dependencies.
 
-```
+```bash
 cd simple-nodejs-thiefmissions-downloader/
 pnpm install
 ```

@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2022 Jonathan Linat <https://github.com/jonathanlinat>
+ * Copyright (c) 2022-2023 Jonathan Linat <https://github.com/jonathanlinat>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 
 const fs = require('fs')
+const path = require('path')
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args))
 const withQuery = require('with-query').default
@@ -33,6 +34,7 @@ const EasyDl = require('easydl')
   console.log('Script started!')
 
   const baseUrl = 'https://thiefmissions.com'
+  const fileExtensions = ['.zip', '.exe', '.pk4', '.ss2mod']
 
   try {
     // Helpers
@@ -40,26 +42,29 @@ const EasyDl = require('easydl')
     const bytesToMegabytes = (value = 0, unit = '') =>
       `${(value / 1024 / 1024).toFixed(2)} ${unit}`
 
-    const localDestinationFolder = (game = '', name = '') => {
-      const path = `./files/${game}/${name}/`
+    const doesLocalFileAlreadyExist = (game = '', name = '') => {
+      const directoryPath = `./files/${game}/${name}/`
 
-      if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true })
-
-      return path
-    }
-
-    const generateLocalFilesList = async () => {
-      const localFilesTree = {}
-
-      for (const game of fs.readdirSync(localDestinationFolder())) {
-        !/\$\$/.test(game) && (localFilesTree[game] = [])
-
-        for (const name of fs.readdirSync(localDestinationFolder(game))) {
-          !/\$\$/.test(name) && localFilesTree[game].push(name)
-        }
+      if (!fs.existsSync(directoryPath)) {
+        return false
       }
 
-      return localFilesTree
+      const directoryFiles = fs.readdirSync(directoryPath)
+
+      return directoryFiles.some((file) => {
+        const fileExt = path.extname(file)
+
+        return fileExtensions.includes(fileExt)
+      })
+    }
+
+    const createLocalDestinationFolder = (game = '', name = '') => {
+      const directoryPath = `./files/${game}/${name}/`
+
+      if (!fs.existsSync(directoryPath))
+        fs.mkdirSync(directoryPath, { recursive: true })
+
+      return directoryPath
     }
 
     const generateOnlineFilesList = async ($ = {}) => {
@@ -81,11 +86,9 @@ const EasyDl = require('easydl')
       return onlineFanMissions
     }
 
-    // Build the Fan Missions lists
+    // Build the Fan Missions list
 
-    console.log('\nRetrieving and building the lists of Fan Missions...')
-
-    const localFanMissions = await generateLocalFilesList()
+    console.log('\nRetrieving and building the list of Fan Missions...')
 
     const searchCgi = {
       path: baseUrl + '/search.cgi',
@@ -97,7 +100,7 @@ const EasyDl = require('easydl')
 
     const onlineFanMissions = await generateOnlineFilesList($)
 
-    console.log('Fan Missions lists successfully built!')
+    console.log('Fan Missions list successfully built!')
 
     // Download the Fan Missions
 
@@ -110,7 +113,7 @@ const EasyDl = require('easydl')
 
     for await (const [game] of Object.entries(onlineFanMissions)) { // eslint-disable-line
       for await (const name of onlineFanMissions[game]) {
-        if (!localFanMissions[game]?.includes(name)) {
+        if (!doesLocalFileAlreadyExist(game, name)) {
           const response = await fetch(
             withQuery(downloadCgi.path, downloadCgi.params(name))
           )
@@ -131,7 +134,7 @@ const EasyDl = require('easydl')
 
             const client = new EasyDl(
               encodedDownloadUrl,
-              localDestinationFolder(game, name),
+              createLocalDestinationFolder(game, name),
               downloadOptions
             )
             await client
@@ -144,7 +147,7 @@ const EasyDl = require('easydl')
                     'Mb'
                   )} / ${bytesToMegabytes(
                     isNaN(parseFloat(progress.total.speed))
-                      ? '-'
+                      ? '0.00'
                       : progress.total.speed,
                     'Mb/s'
                   )})`

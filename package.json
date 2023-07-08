@@ -2,7 +2,7 @@
   "name": "simple-nodejs-thiefmissions-downloader",
   "description": "A very simple and automated tool to scrape and download Fan Mission from ThiefMissions.com",
   "author": "Jonathan Linat <jonathan.linat@gmail.com>",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "license": "UNLICENSED",
   "private": true,
   "main": "src/index.js",
