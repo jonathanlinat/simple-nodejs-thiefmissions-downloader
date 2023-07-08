@@ -23,7 +23,6 @@
  */
 
 const fs = require('fs')
-const path = require('path')
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args))
 const withQuery = require('with-query').default
@@ -56,9 +55,7 @@ const EasyDl = require('easydl')
         !/\$\$/.test(game) && (localFilesTree[game] = [])
 
         for (const name of fs.readdirSync(localDestinationFolder(game))) {
-          const parsedName = path.parse(name).name
-
-          !/\$\$/.test(name) && localFilesTree[game].push(parsedName)
+          !/\$\$/.test(name) && localFilesTree[game].push(name)
         }
       }
 
@@ -86,7 +83,7 @@ const EasyDl = require('easydl')
 
     // Build the Fan Missions lists
 
-    console.log('Retrieving and building the lists of Fan Missions...')
+    console.log('\nRetrieving and building the lists of Fan Missions...')
 
     const localFanMissions = await generateLocalFilesList()
 
@@ -111,7 +108,7 @@ const EasyDl = require('easydl')
       params: (value) => ({ m: value, noredir: 1 })
     }
 
-    for await (const [game, names] of Object.entries(onlineFanMissions)) { // eslint-disable-line
+    for await (const [game] of Object.entries(onlineFanMissions)) { // eslint-disable-line
       for await (const name of onlineFanMissions[game]) {
         if (!localFanMissions[game]?.includes(name)) {
           const response = await fetch(
@@ -122,7 +119,7 @@ const EasyDl = require('easydl')
 
           for await (const file of $('a[href*="/dl/"]')) {
             console.log(
-              `Starting to download Fan Mission "${name}" (${game})...`
+              `\nStarting to download Fan Mission "${name}" (${game})...`
             )
 
             const encodedDownloadUrl = encodeURI(baseUrl + file.attribs.href)
@@ -145,7 +142,12 @@ const EasyDl = require('easydl')
                   )}% (${bytesToMegabytes(
                     progress.total.bytes,
                     'Mb'
-                  )} / ${bytesToMegabytes(progress.total.speed, 'Mb/s')})`
+                  )} / ${bytesToMegabytes(
+                    isNaN(parseFloat(progress.total.speed))
+                      ? '-'
+                      : progress.total.speed,
+                    'Mb/s'
+                  )})`
                 )
               )
               .wait()
@@ -158,7 +160,7 @@ const EasyDl = require('easydl')
       }
     }
 
-    console.log('Fan Missions successfully downloaded!')
+    console.log('\nFan Missions successfully downloaded!')
   } catch (error) {
     throw new Error(error)
   }
