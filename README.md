@@ -8,8 +8,8 @@ This project uses mainly the `cheerio`, `node-fetch` and `easydl` libraries.
 
 ### Prerequisites
 
-- Node v16: [Download](https://nodejs.org/en/download/)
-- pnpm: `npm install -g pnpm@latest`
+- Node v18: [Download](https://nodejs.org/en/download/)
+- pnpm v7: `npm install -g pnpm@7`
 
 ## First steps
 
