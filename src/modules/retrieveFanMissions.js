@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-const { baseUrl } = require('./../shared/_constants')
-const { cheerio, withQuery, fetch } = require('./../shared/_dependencies')
-const { generateOnlineFilesList } = require('./../shared/_helpers')
+const { baseUrl } = require('../_shared/constants')
+const { cheerio, withQuery, fetch } = require('../_shared/dependencies')
+const { generateOnlineFilesList } = require('../_shared/helpers')
 
 const retrieveFanMissions = async () => {
   console.log('Retrieving and building the list of Fan Missions...')

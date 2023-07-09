@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-const { fileExtensions } = require('./_constants')
-const { fs, fsp, path, yauzl, util } = require('./_dependencies')
+const { fileExtensions } = require('./constants')
+const { fs, fsp, path, yauzl, util } = require('./dependencies')
 
 const convertBytesToMegabytes = (bytes = 0, unit = '') =>
   `${(bytes / 1024 / 1024).toFixed(2)} ${unit}`

@@ -4,12 +4,16 @@ This is a very simple Node.js script to retrieve and download Fan Missions from 
 
 ## Details
 
-This project uses mainly the `cheerio`, `node-fetch` and `easydl` libraries.
+This project uses mainly the `cheerio`, `yauzl`, `node-fetch` and `easydl` libraries.
 
 ### Prerequisites
 
 - Node v18: [Download](https://nodejs.org/en/download/)
 - pnpm v7: `npm install -g pnpm@7`
+
+### Disclaimers
+
+The source code of the project includes a modified compiled version of [EasyDl](https://github.com/andresusanto/easydl) to address a very specific [memory leak issue](https://github.com/andresusanto/easydl/issues/10).
 
 ## First steps
 
